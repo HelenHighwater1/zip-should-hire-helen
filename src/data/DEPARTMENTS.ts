@@ -67,6 +67,7 @@ export const DEPARTMENTS: Record<DepartmentId, Department> = {
     id: 'flag',
     label: 'Flag for Review',
     emoji: '🚩',
+    icon: '/red-flag.png',
     color: 'var(--color-dept-flag)',
     rule:
       'This request is obviously personal, duplicative, or has no legitimate business justification whatsoever. Not just eyebrow-raising - clearly indefensible on its face. When in doubt, route to the correct department instead.',
