@@ -640,7 +640,6 @@ export default function EndScreen({
             fontSize: fontSizes.md,
             color: colors.secondary,
             fontWeight: fontWeights.semibold,
-            marginTop: spacing.xs,
             margin: 0,
           }}
         >
