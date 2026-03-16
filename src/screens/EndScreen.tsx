@@ -132,159 +132,162 @@ export default function EndScreen({
       style={{
         minHeight: '100dvh',
         background: colors.bg,
-        padding: `${spacing['3xl']} ${spacing.lg} ${spacing['2xl']}`,
+        padding: `${spacing.xl} ${spacing.lg} ${spacing.lg}`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: spacing['2xl'],
-        maxWidth: '960px',
+        gap: spacing.lg,
+        maxWidth: '1060px',
         margin: '0 auto',
       }}
     >
-      {/* ── Win / Lose Header ─────────────────────────────────────────────── */}
-      <motion.div variants={fadeUp} style={{ textAlign: 'center' }}>
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={animation.springBouncy}
-          style={{ fontSize: '4rem', marginBottom: spacing.sm }}
-        >
-          {didWin ? '🏆' : '💥'}
-        </motion.div>
-        <h1
-          style={{
-            fontFamily: fonts.heading,
-            fontSize: fontSizes['5xl'],
-            fontWeight: fontWeights.bold,
-            color: didWin ? colors.success : colors.danger,
-            margin: 0,
-            lineHeight: lineHeights.tight,
-          }}
-        >
-          {didWin ? 'Budget Saved!' : 'Budget Busted'}
-        </h1>
-        <p
-          style={{
-            fontFamily: fonts.body,
-            fontSize: fontSizes.lg,
-            color: colors.textSecondary,
-            marginTop: spacing.sm,
-            lineHeight: lineHeights.normal,
-            maxWidth: '520px',
-            margin: `${spacing.sm} auto 0`,
-          }}
-        >
-          {didWin
-            ? 'Against all odds, Uncontrolled Chaos Corp lives to spend another day. The CFO is weeping tears of joy.'
-            : 'Uncontrolled Chaos Corp has declared bankruptcy. Todd is somehow fine.'}
-        </p>
-      </motion.div>
-
-      {/* ── Hero Stats ────────────────────────────────────────────────────── */}
+      {/* ── Header + Hero Stats (single row) ─────────────────────────────── */}
       <motion.div
         variants={fadeUp}
         style={{
           display: 'flex',
-          gap: spacing.lg,
+          alignItems: 'center',
+          gap: spacing['2xl'],
           width: '100%',
-          justifyContent: 'center',
         }}
       >
-        <div
-          style={{
-            flex: 1,
-            maxWidth: '280px',
-            background: colors.surface,
-            borderRadius: radii.lg,
-            padding: spacing.lg,
-            boxShadow: shadows.sm,
-            textAlign: 'center',
-          }}
-        >
-          <div
+        {/* Left: win/lose message */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={animation.springBouncy}
+              style={{ fontSize: '3rem', flexShrink: 0 }}
+            >
+              {didWin ? '🏆' : '💥'}
+            </motion.div>
+            <h1
+              style={{
+                fontFamily: fonts.heading,
+                fontSize: fontSizes['4xl'],
+                fontWeight: fontWeights.bold,
+                color: didWin ? colors.success : colors.danger,
+                margin: 0,
+                lineHeight: lineHeights.tight,
+              }}
+            >
+              {didWin ? 'Budget Saved!' : 'Budget Busted'}
+            </h1>
+          </div>
+          <p
             style={{
               fontFamily: fonts.body,
-              fontSize: fontSizes.xs,
-              color: colors.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              fontWeight: fontWeights.semibold,
-              marginBottom: spacing.xs,
+              fontSize: fontSizes.md,
+              color: colors.textSecondary,
+              marginTop: spacing.sm,
+              lineHeight: lineHeights.normal,
+              margin: `${spacing.xs} 0 0`,
+              maxWidth: '420px',
             }}
           >
-            Rogue Spend
-          </div>
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: fontSizes['4xl'],
-              fontWeight: fontWeights.bold,
-              color:
-                rogueSpend >= ROGUE_SPEND_CAP ? colors.danger : colors.text,
-            }}
-          >
-            {formatDollars(rogueSpend)}
-          </div>
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: fontSizes.sm,
-              color: colors.textMuted,
-              marginTop: spacing['2xs'],
-            }}
-          >
-            of {formatDollars(ROGUE_SPEND_CAP)} cap
-          </div>
+            {didWin
+              ? 'Against all odds, Uncontrolled Chaos Corp lives to spend another day. The CFO is weeping tears of joy.'
+              : 'Uncontrolled Chaos Corp has declared bankruptcy. Todd is somehow fine.'}
+          </p>
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            maxWidth: '280px',
-            background: colors.surface,
-            borderRadius: radii.lg,
-            padding: spacing.lg,
-            boxShadow: shadows.sm,
-            textAlign: 'center',
-          }}
-        >
+        {/* Right: stat cards */}
+        <div style={{ display: 'flex', gap: spacing.md, flexShrink: 0 }}>
           <div
             style={{
-              fontFamily: fonts.body,
-              fontSize: fontSizes.xs,
-              color: colors.textMuted,
-              textTransform: 'uppercase',
-              letterSpacing: '1.5px',
-              fontWeight: fontWeights.semibold,
-              marginBottom: spacing.xs,
+              width: 200,
+              background: colors.surface,
+              borderRadius: radii.lg,
+              padding: spacing.md,
+              boxShadow: shadows.sm,
+              textAlign: 'center',
             }}
           >
-            Routing Accuracy
+            <div
+              style={{
+                fontFamily: fonts.body,
+                fontSize: fontSizes.xs,
+                color: colors.textMuted,
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                fontWeight: fontWeights.semibold,
+                marginBottom: spacing['2xs'],
+              }}
+            >
+              Rogue Spend
+            </div>
+            <div
+              style={{
+                fontFamily: fonts.mono,
+                fontSize: fontSizes['2xl'],
+                fontWeight: fontWeights.bold,
+                color:
+                  rogueSpend >= ROGUE_SPEND_CAP ? colors.danger : colors.text,
+              }}
+            >
+              {formatDollars(rogueSpend)}
+            </div>
+            <div
+              style={{
+                fontFamily: fonts.mono,
+                fontSize: fontSizes.xs,
+                color: colors.textMuted,
+                marginTop: spacing['2xs'],
+              }}
+            >
+              of {formatDollars(ROGUE_SPEND_CAP)} cap
+            </div>
           </div>
+
           <div
             style={{
-              fontFamily: fonts.mono,
-              fontSize: fontSizes['4xl'],
-              fontWeight: fontWeights.bold,
-              color:
-                accuracy >= 80
-                  ? colors.success
-                  : accuracy >= 60
-                    ? colors.warning
-                    : colors.danger,
+              width: 200,
+              background: colors.surface,
+              borderRadius: radii.lg,
+              padding: spacing.md,
+              boxShadow: shadows.sm,
+              textAlign: 'center',
             }}
           >
-            {accuracy}%
-          </div>
-          <div
-            style={{
-              fontFamily: fonts.mono,
-              fontSize: fontSizes.sm,
-              color: colors.textMuted,
-              marginTop: spacing['2xs'],
-            }}
-          >
-            correctly routed
+            <div
+              style={{
+                fontFamily: fonts.body,
+                fontSize: fontSizes.xs,
+                color: colors.textMuted,
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                fontWeight: fontWeights.semibold,
+                marginBottom: spacing['2xs'],
+              }}
+            >
+              Routing Accuracy
+            </div>
+            <div
+              style={{
+                fontFamily: fonts.mono,
+                fontSize: fontSizes['2xl'],
+                fontWeight: fontWeights.bold,
+                color:
+                  accuracy >= 80
+                    ? colors.success
+                    : accuracy >= 60
+                      ? colors.warning
+                      : colors.danger,
+              }}
+            >
+              {accuracy}%
+            </div>
+            <div
+              style={{
+                fontFamily: fonts.mono,
+                fontSize: fontSizes.xs,
+                color: colors.textMuted,
+                marginTop: spacing['2xs'],
+              }}
+            >
+              correctly routed
+            </div>
           </div>
         </div>
       </motion.div>
@@ -318,14 +321,14 @@ export default function EndScreen({
           </h3>
 
           {donutData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={240}>
+            <ResponsiveContainer width="100%" height={180}>
               <PieChart>
                 <Pie
                   data={donutData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={45}
+                  outerRadius={75}
                   paddingAngle={3}
                   dataKey="value"
                   stroke="none"
@@ -342,7 +345,7 @@ export default function EndScreen({
           ) : (
             <div
               style={{
-                height: 240,
+                height: 180,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -419,7 +422,7 @@ export default function EndScreen({
             Rogue Spend Over Time
           </h3>
 
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={rogueSpendOverTime}>
               <defs>
                 <linearGradient id="rogueGrad" x1="0" y1="0" x2="0" y2="1">
@@ -514,13 +517,13 @@ export default function EndScreen({
                 onMouseEnter={() => setHoveredDept(id)}
                 onMouseLeave={() => setHoveredDept(null)}
                 style={{
-                  width: 160,
+                  width: 148,
                   background: isHovered
                     ? deptColorsLight[id]
                     : colors.surface,
                   border: `2px solid ${deptColors[id]}`,
                   borderRadius: radii.lg,
-                  padding: spacing.md,
+                  padding: spacing.sm,
                   textAlign: 'center',
                   cursor: 'pointer',
                   transition: `all ${animation.duration.fast}s ease`,
@@ -532,7 +535,11 @@ export default function EndScreen({
                     : shadows.sm,
                 }}
               >
-                <div style={{ fontSize: fontSizes['3xl'] }}>{dept.emoji}</div>
+                {dept.icon ? (
+                  <img src={dept.icon} alt={dept.label} style={{ width: 36, height: 36 }} />
+                ) : (
+                  <div style={{ fontSize: fontSizes['3xl'] }}>{dept.emoji}</div>
+                )}
                 <div
                   style={{
                     fontFamily: fonts.heading,
@@ -616,7 +623,7 @@ export default function EndScreen({
         variants={fadeUp}
         style={{
           textAlign: 'center',
-          paddingTop: spacing.lg,
+          paddingTop: spacing.md,
           borderTop: `1px solid ${colors.borderLight}`,
           width: '100%',
         }}
@@ -658,7 +665,7 @@ export default function EndScreen({
 
         </p>
 
-        <div style={{ marginTop: spacing['2xl'] }}>
+        <div style={{ marginTop: spacing.md }}>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
@@ -678,6 +685,46 @@ export default function EndScreen({
           >
             🔄 Play Again
           </motion.button>
+        </div>
+
+        <div
+          style={{
+            marginTop: spacing.md,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <a
+            href="https://heyimhelen.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: fonts.body,
+              fontSize: fontSizes.xs,
+              color: colors.textMuted,
+              textDecoration: 'none',
+              opacity: 0.7,
+            }}
+          >
+            Made with care by Helen Highwater
+          </a>
+          <a
+            href="https://www.flaticon.com/free-icons/computer"
+            title="computer icons"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: fonts.body,
+              fontSize: fontSizes.xs,
+              color: colors.textMuted,
+              textDecoration: 'none',
+              opacity: 0.7,
+            }}
+          >
+            Computer icons created by Vectors Tank - Flaticon
+          </a>
         </div>
       </motion.div>
     </motion.div>

@@ -555,6 +555,33 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
           </span>
         </div>
       </motion.div>
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          textAlign: 'center',
+          padding: spacing.sm,
+          zIndex: zIndex.overlay,
+        }}
+      >
+        <a
+          href="https://heyimhelen.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: fonts.body,
+            fontSize: fontSizes.xs,
+            color: colors.textMuted,
+            textDecoration: 'none',
+            opacity: 0.7,
+          }}
+        >
+          Made with care by Helen Highwater
+        </a>
+      </div>
     </div>
   );
 }

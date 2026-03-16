@@ -12,7 +12,7 @@ import {
 } from '@dnd-kit/core';
 import { motion } from 'framer-motion';
 import { DEPARTMENTS, DEPARTMENT_ORDER, type DepartmentId } from '../data/DEPARTMENTS';
-import { type Card, ROGUE_SPEND_CAP, buildDeck } from '../data/CARDS';
+import { type Card, ROGUE_SPEND_CAP, buildStagedDeck, STAGES } from '../data/CARDS';
 import {
   colors,
   deptColors,
@@ -58,22 +58,30 @@ interface BeltCard {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const BELT_SPEED = 8;
 const BOUNCE_PENALTY = 15;
 const FALL_OFF_X = -12;
 
-const DEAL_INTERVAL: Record<1 | 2 | 3, number> = {
-  1: 3000,
-  2: 2200,
-  3: 1500,
-};
+// ─── Stage logic ─────────────────────────────────────────────────────────────
 
-// ─── Tier logic ──────────────────────────────────────────────────────────────
+const STAGE_BOUNDARIES: number[] = [];
+{
+  let sum = 0;
+  for (const s of STAGES) {
+    sum += s.cardCount;
+    STAGE_BOUNDARIES.push(sum);
+  }
+}
 
-function getTier(deckIndex: number): 1 | 2 | 3 {
-  if (deckIndex < 12) return 1;
-  if (deckIndex < 28) return 2;
-  return 3;
+function getStageIndex(deckIndex: number): number {
+  for (let i = 0; i < STAGE_BOUNDARIES.length; i++) {
+    if (deckIndex < STAGE_BOUNDARIES[i]) return i;
+  }
+  return STAGES.length - 1;
+}
+
+function isFirstCardOfStage(deckIndex: number): boolean {
+  if (deckIndex === 0) return true;
+  return STAGE_BOUNDARIES.includes(deckIndex);
 }
 
 interface RoutingLog {
@@ -207,7 +215,11 @@ function DeptBucket({ deptId }: { deptId: DepartmentId }) {
         boxShadow: isOver ? shadows.glow(deptColors[deptId]) : shadows.sm,
       }}
     >
-      <span style={{ fontSize: fontSizes['3xl'] }}>{dept.emoji}</span>
+      {dept.icon ? (
+        <img src={dept.icon} alt={dept.label} style={{ width: 36, height: 36 }} />
+      ) : (
+        <span style={{ fontSize: fontSizes['3xl'] }}>{dept.emoji}</span>
+      )}
       <span
         style={{
           fontFamily: fonts.heading,
@@ -326,7 +338,7 @@ function RogueSpendMeter({ current, cap }: { current: number; cap: number }) {
 // ─── GameScreen ──────────────────────────────────────────────────────────────
 
 export default function GameScreen({ onWin, onLose }: GameScreenProps) {
-  const deckRef = useRef(buildDeck());
+  const deckRef = useRef(buildStagedDeck());
   const [beltCards, setBeltCards] = useState<BeltCard[]>([]);
   const [rogueSpend, setRogueSpend] = useState(0);
   const [nextCardIndex, setNextCardIndex] = useState(0);
@@ -335,6 +347,7 @@ export default function GameScreen({ onWin, onLose }: GameScreenProps) {
   const lastTickRef = useRef(performance.now());
   const gameOverRef = useRef(false);
   const rogueSpendRef = useRef(0);
+  const beltSpeedRef = useRef(STAGES[0].beltSpeed);
   const logRef = useRef<RoutingLog>({
     correct: 0,
     fallen: 0,
@@ -356,14 +369,25 @@ export default function GameScreen({ onWin, onLose }: GameScreenProps) {
     };
   }
 
-  // ── Deal cards onto the belt on a timer ─────────────────────────────────
+  // ── Deal cards onto the belt on a staged timer ─────────────────────────
 
   useEffect(() => {
     const deck = deckRef.current;
     if (nextCardIndex >= deck.length || gameOverRef.current) return;
 
-    const tier = getTier(nextCardIndex);
-    const delay = nextCardIndex === 0 ? 0 : DEAL_INTERVAL[tier];
+    const stageIdx = getStageIndex(nextCardIndex);
+    const stage = STAGES[stageIdx];
+    beltSpeedRef.current = stage.beltSpeed;
+
+    let delay: number;
+    if (nextCardIndex === 0) {
+      delay = 0;
+    } else if (isFirstCardOfStage(nextCardIndex)) {
+      const prevStage = STAGES[stageIdx - 1];
+      delay = prevStage.breakAfter + stage.dealInterval;
+    } else {
+      delay = stage.dealInterval;
+    }
 
     const timerId = setTimeout(() => {
       const card = deck[nextCardIndex];
@@ -388,7 +412,7 @@ export default function GameScreen({ onWin, onLose }: GameScreenProps) {
 
       setBeltCards(prev =>
         prev.map(bc =>
-          bc.isPaused ? bc : { ...bc, x: bc.x - BELT_SPEED * dt },
+          bc.isPaused ? bc : { ...bc, x: bc.x - beltSpeedRef.current * dt },
         ),
       );
 
@@ -642,6 +666,53 @@ export default function GameScreen({ onWin, onLose }: GameScreenProps) {
           {activeCard && <CardFace card={activeCard} isDragging />}
         </DragOverlay>
       </DndContext>
+
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: spacing.xs,
+          pointerEvents: 'none',
+          zIndex: zIndex.overlay,
+        }}
+      >
+        <a
+          href="https://heyimhelen.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: fonts.body,
+            fontSize: fontSizes.xs,
+            color: colors.textMuted,
+            textDecoration: 'none',
+            opacity: 0.5,
+            pointerEvents: 'auto',
+          }}
+        >
+          Made with care by Helen Highwater
+        </a>
+        <a
+          href="https://www.flaticon.com/free-icons/computer"
+          title="computer icons"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: fonts.body,
+            fontSize: fontSizes.xs,
+            color: colors.textMuted,
+            textDecoration: 'none',
+            opacity: 0.5,
+            pointerEvents: 'auto',
+          }}
+        >
+          Computer icons created by Vectors Tank - Flaticon
+        </a>
+      </div>
     </>
   );
 }
